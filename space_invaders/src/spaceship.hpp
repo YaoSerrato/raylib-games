@@ -1,6 +1,8 @@
 #pragma once // This header file will be included only once in a compilation unit
 
 #include "raylib.h"
+#include "laser.hpp"
+#include <vector>
 
 class Spaceship
 {
@@ -13,7 +15,10 @@ class Spaceship
         void MoveRight();
         void FireLaser();
 
+        std::vector<Laser> lasers;
+
     private:
         Texture2D image;
         Vector2 position;
+        double lastFireTime;
 };

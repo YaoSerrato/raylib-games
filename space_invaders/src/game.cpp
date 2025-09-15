@@ -10,11 +10,23 @@ Game::~Game()
 
 void Game::Draw()
 {
+    // Draw the spaceship
     spaceship.Draw();
+
+    // Draw all active lasers
+    for(auto& single_laser: spaceship.lasers)
+    {
+        single_laser.Draw();
+    }
 }
 
 void Game::Update()
 {
+    // Update position of all active lasers
+    for(auto& single_laser: spaceship.lasers)
+    {
+        single_laser.Update();
+    }
 }
 
 void Game::HandleInput()
@@ -26,5 +38,9 @@ void Game::HandleInput()
     else if(IsKeyDown(KEY_RIGHT))
     {
         spaceship.MoveRight();
+    }
+    else if(IsKeyDown(KEY_SPACE))
+    {
+        spaceship.FireLaser();
     }
 }
