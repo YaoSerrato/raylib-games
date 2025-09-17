@@ -1,6 +1,7 @@
 #pragma once // This header file will be included only once in a compilation unit
 
 #include "spaceship.hpp"
+#include "obstacle.hpp"
 
 class Game
 {
@@ -13,6 +14,8 @@ class Game
 
     private:
         void DeleteInactiveLasers();
+        void CreateObstacles(unsigned int numberOfObstacles);
 
         Spaceship spaceship;
+        std::vector<Obstacle> obstacles;
 };
