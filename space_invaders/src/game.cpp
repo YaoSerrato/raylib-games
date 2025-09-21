@@ -5,6 +5,7 @@ Game::Game()
 {
     // Create desired number of obstacles
     CreateObstacles(4);
+    CreateAliens(5, 2);
 }
 
 Game::~Game()
@@ -26,6 +27,12 @@ void Game::Draw()
     for(auto& single_obstacle: obstacles)
     {
         single_obstacle.Draw();
+    }
+
+    // Draw all aliens
+    for(auto& single_alien: aliens)
+    {
+        single_alien.Draw();
     }
 }
 
@@ -88,5 +95,38 @@ void Game::CreateObstacles(unsigned int numberOfObstacles)
     {
         float offset_x = (obstacleGap * (i + 1)) + (obstacleWidth * (i));
         obstacles.push_back( Obstacle((Vector2){offset_x, (float)(GetScreenHeight() - 100)}) );
+    }
+}
+
+void Game::CreateAliens(unsigned int numberOfAliensPerRow, unsigned int numberOfRows)
+{
+    if( (numberOfRows <= 0) || (numberOfRows > ALIEN_ARMY_MAX_ROWS) )
+    {
+        numberOfRows = ALIEN_ARMY_MAX_ROWS;
+    }
+
+    if( (numberOfAliensPerRow <= 0) || (numberOfAliensPerRow > ALIEN_ARMY_MAX_PER_ROW) )
+    {
+        numberOfAliensPerRow = ALIEN_ARMY_MAX_PER_ROW;
+    }
+
+    unsigned int this_type = 0;
+    unsigned int initial_x = (GetScreenWidth() - (numberOfAliensPerRow * ALIEN_ARMY_ALIEN_CELLSIZE)) / 2;
+
+    for(unsigned int row = 0; row < numberOfRows; ++row)
+    {
+        if(this_type >= ALIEN_TYPE_MAX)
+        {
+            this_type = ALIEN_TYPE_1;
+        }
+
+        for(unsigned int col = 0; col < numberOfAliensPerRow; ++col)
+        {
+            float x = initial_x + col * ALIEN_ARMY_ALIEN_CELLSIZE;
+            float y = ALIEN_ARMY_INITIAL_POSITION_Y + row * ALIEN_ARMY_ALIEN_CELLSIZE;
+            aliens.push_back( Alien( (alienType)this_type, (Vector2){x, y} ) );
+        }
+
+        this_type++;
     }
 }
