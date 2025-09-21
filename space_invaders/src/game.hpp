@@ -2,6 +2,7 @@
 
 #include "spaceship.hpp"
 #include "obstacle.hpp"
+#include "alien.hpp"
 
 class Game
 {
@@ -15,7 +16,9 @@ class Game
     private:
         void DeleteInactiveLasers();
         void CreateObstacles(unsigned int numberOfObstacles);
+        void CreateAliens(unsigned int numberOfAliensPerRow, unsigned int numberOfRows);
 
         Spaceship spaceship;
         std::vector<Obstacle> obstacles;
+        std::vector<Alien> aliens;
 };
