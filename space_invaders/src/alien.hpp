@@ -25,8 +25,9 @@ class Alien
         void Update();
         void Draw();
         alienType GetType();
+        static void UnloadImages();
 
-        Texture2D image;
+        static Texture2D alienImages[ALIEN_TYPE_MAX];
         alienType type;
         Vector2 position;
 

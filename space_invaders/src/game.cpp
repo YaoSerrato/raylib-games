@@ -10,6 +10,7 @@ Game::Game()
 
 Game::~Game()
 {
+    Alien::UnloadImages();
 }
 
 void Game::Draw()
