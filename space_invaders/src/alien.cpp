@@ -27,8 +27,9 @@ Alien::Alien(alienType type, Vector2 position)
     }
 }
 
-void Alien::Update()
+void Alien::Update(int direction)
 {
+    position.x += direction;
 }
 
 void Alien::Draw()

@@ -5,7 +5,9 @@ Game::Game()
 {
     // Create desired number of obstacles
     CreateObstacles(4);
-    CreateAliens(5, 2);
+    CreateAliens(2, 5);
+
+    aliensDirection = ALIEN_ARMY_HORIZONTAL_DIRECTION;
 }
 
 Game::~Game()
@@ -47,7 +49,9 @@ void Game::Update()
 
     // Removing all inactive lasers from the vector
     DeleteInactiveLasers();
-    //std::cout << "Number of active lasers: " << spaceship.lasers.size() << std::endl;
+
+    // Update position of all aliens
+    MoveAliens();
 }
 
 void Game::HandleInput()
@@ -129,5 +133,47 @@ void Game::CreateAliens(unsigned int numberOfAliensPerRow, unsigned int numberOf
         }
 
         this_type++;
+    }
+}
+
+void Game::MoveAliens()
+{
+    // Update position of all aliens
+    for(auto& single_alien: aliens)
+    {
+        single_alien.Update(aliensDirection);
+    }
+
+    // Check if any alien has reached the edge of the screen
+    unsigned int left_limit = ALIEN_ARMY_LATERAL_OFFSET;
+    unsigned int right_limit = GetScreenWidth() - ALIEN_ARMY_LATERAL_OFFSET;
+    bool change_direction = false;
+
+    for(auto& single_alien: aliens)
+    {
+        if( (single_alien.position.x <= left_limit) || (single_alien.position.x >= right_limit - ALIEN_ARMY_ALIEN_CELLSIZE) )
+        {
+            change_direction = true;
+            break;
+        }
+    }
+
+    if (change_direction)
+    {
+        aliensDirection *= -1; // Reverse direction
+
+        // Move all aliens down by a certain amount
+        MoveAliensVertical(ALIEN_ARMY_VERTICAL_DIRECTION);
+
+        change_direction = false;
+    }
+    
+}
+
+void Game::MoveAliensVertical(unsigned int distance)
+{
+    for(auto& single_alien: aliens)
+    {
+        single_alien.position.y += distance;
     }
 }
