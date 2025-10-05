@@ -13,6 +13,8 @@
 #define ALIEN_ARMY_MAX_ROWS              5
 #define ALIEN_ARMY_MAX_PER_ROW           11
 
+#define ALIEN_ARMY_FIRE_RATE             ((double)(0.80))
+
 typedef enum alienType
 {
     ALIEN_TYPE_1 = 0,

@@ -19,9 +19,12 @@ class Game
         void CreateAliens(unsigned int numberOfAliensPerRow, unsigned int numberOfRows);
         void MoveAliens();
         void MoveAliensVertical(unsigned int distance);
+        void AlienShootLaser();
 
         Spaceship spaceship;
         std::vector<Obstacle> obstacles;
         std::vector<Alien> aliens;
         int aliensDirection;
+        std::vector<Laser> aliensLasers;
+        double lastFireTimeAlien;
 };
