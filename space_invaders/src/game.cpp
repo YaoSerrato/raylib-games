@@ -5,10 +5,15 @@ Game::Game()
 {
     // Create desired number of obstacles
     CreateObstacles(4);
-    CreateAliens(2, 5);
 
+    // Create aliens
+    CreateAliens(2, 5);
     aliensDirection = ALIEN_ARMY_HORIZONTAL_DIRECTION;
     lastFireTimeAlien = 0.0;
+
+    // Initialize mystery ship spawn timer
+    lastMysteryShipSpawnTime = 0.0;
+    mysteryShipSpawnInterval = GetRandomValue(MYSTERY_SHIP_MIN_SPAWN_INTERVAL, MYSTERY_SHIP_MAX_SPAWN_INTERVAL);
 }
 
 Game::~Game()
@@ -39,11 +44,14 @@ void Game::Draw()
         single_alien.Draw();
     }
 
-    //Draw all alien lasers
+    // Draw all alien lasers
     for(auto& single_laser: aliensLasers)
     {
         single_laser.Draw();
     }
+
+    // Draw mystery ship
+    mysteryShip.Draw();
 }
 
 void Game::Update()
@@ -65,6 +73,18 @@ void Game::Update()
     for(auto& single_laser: aliensLasers)
     {
         single_laser.Update();
+    }
+
+    // Spawn mystery ship
+    mysteryShip.Update();
+    if(mysteryShip.alive == false)  // Only spawn a new mystery ship if there is not one already active
+    {
+        if( (GetTime() - lastMysteryShipSpawnTime) >= mysteryShipSpawnInterval )
+        {
+            mysteryShip.Spawn();
+            lastMysteryShipSpawnTime = GetTime();
+            mysteryShipSpawnInterval = GetRandomValue(MYSTERY_SHIP_MIN_SPAWN_INTERVAL, MYSTERY_SHIP_MAX_SPAWN_INTERVAL);
+        }
     }
 }
 

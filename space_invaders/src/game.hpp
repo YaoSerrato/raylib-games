@@ -3,6 +3,7 @@
 #include "spaceship.hpp"
 #include "obstacle.hpp"
 #include "alien.hpp"
+#include "mystery_ship.hpp"
 
 class Game
 {
@@ -27,4 +28,7 @@ class Game
         int aliensDirection;
         std::vector<Laser> aliensLasers;
         double lastFireTimeAlien;
+        MysteryShip mysteryShip;
+        double lastMysteryShipSpawnTime;
+        double mysteryShipSpawnInterval;
 };
