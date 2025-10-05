@@ -15,6 +15,7 @@ class Laser
         ~Laser();
         void Update();
         void Draw();
+        Rectangle GetRect();
         bool active;
 
     private:

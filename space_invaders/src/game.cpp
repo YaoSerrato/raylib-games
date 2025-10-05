@@ -7,7 +7,7 @@ Game::Game()
     CreateObstacles(4);
 
     // Create aliens
-    CreateAliens(2, 5);
+    CreateAliens(11, 5);
     aliensDirection = ALIEN_ARMY_HORIZONTAL_DIRECTION;
     lastFireTimeAlien = 0.0;
 
@@ -86,6 +86,9 @@ void Game::Update()
             mysteryShipSpawnInterval = GetRandomValue(MYSTERY_SHIP_MIN_SPAWN_INTERVAL, MYSTERY_SHIP_MAX_SPAWN_INTERVAL);
         }
     }
+
+    // Check for collisions
+    CheckCollisions();
 }
 
 void Game::HandleInput()
@@ -235,5 +238,120 @@ void Game::AlienShootLaser()
                                                 shooting_alien.position.y + shooting_alien.alienImages[shooting_alien.type].height},
                                                 LASER_BEAM_ALIEN_SPEED));
         lastFireTimeAlien = GetTime();
+    }
+}
+
+void Game::CheckCollisions()
+{
+    // Collisions between spaceship lasers and other elements
+    for(auto& spaceship_laser: spaceship.lasers)
+    {
+        // Collisions between spaceship lasers and aliens
+        auto it = aliens.begin();
+        while (it != aliens.end())
+        {
+            if(CheckCollisionRecs(spaceship_laser.GetRect(), it->GetRect()))
+            {
+                // There is a collision between a spaceship laser and an alien
+                it = aliens.erase(it); // Remove the alien from the vector
+                spaceship_laser.active = false;
+                std::cout << "Alien hit!" << std::endl;
+            }
+            else
+            {
+                ++it;
+            }
+        }
+
+        // Collisions between spaceship lasers and obstacles
+        for(auto& this_obstacle: obstacles)
+        {
+            auto it = this_obstacle.blocks.begin();
+            while(it != this_obstacle.blocks.end())
+            {
+                if(CheckCollisionRecs(spaceship_laser.GetRect(), it->GetRect()))
+                {
+                    // There is a collision between a spaceship laser and an obstacle block
+                    it = this_obstacle.blocks.erase(it); // Remove the block from the vector
+                    spaceship_laser.active = false;
+                    std::cout << "Obstacle damage!" << std::endl;
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+        }
+
+        // Collisions between spaceship lasers and mystery ship
+        if(CheckCollisionRecs(spaceship_laser.GetRect(), mysteryShip.GetRect()))
+        {
+            // There is a collision between a spaceship laser and the mystery ship
+            mysteryShip.alive = false;
+            spaceship_laser.active = false;
+            std::cout << "Mystery ship hit!" << std::endl;
+        }
+    }
+
+    // Collisions between aliens lasers and other elements
+    for(auto& alien_laser: aliensLasers)
+    {
+        // Collisions between alien lasers and the spaceship
+        if(CheckCollisionRecs(alien_laser.GetRect(), spaceship.GetRect()))
+        {
+            // There is a collision between an alien laser and the spaceship
+            alien_laser.active = false;
+            std::cout << "Spaceship hit!" << std::endl;
+        }
+
+        // Collisions between alien lasers and obstacles
+        for(auto& this_obstacle: obstacles)
+        {
+            auto it = this_obstacle.blocks.begin();
+            while(it != this_obstacle.blocks.end())
+            {
+                if(CheckCollisionRecs(alien_laser.GetRect(), it->GetRect()))
+                {
+                    // There is a collision between an alien laser and an obstacle block
+                    it = this_obstacle.blocks.erase(it); // Remove the block from the vector
+                    alien_laser.active = false;
+                    std::cout << "Obstacle damage!" << std::endl;
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+        }
+    }
+
+    // Collisions between aliens and other elements
+    for(auto& this_alien: aliens)
+    {
+        // Collision between aliens and the spaceship
+        if(CheckCollisionRecs(this_alien.GetRect(), spaceship.GetRect()))
+        {
+            // There is a collision between an alien and the spaceship
+            std::cout << "Spaceship hit by alien!" << std::endl;
+        }
+
+        // Collisions between aliens and obstacles
+        for(auto& this_obstacle: obstacles)
+        {
+            auto it = this_obstacle.blocks.begin();
+            while(it != this_obstacle.blocks.end())
+            {
+                if(CheckCollisionRecs(this_alien.GetRect(), it->GetRect()))
+                {
+                    // There is a collision between an alien and an obstacle block
+                    it = this_obstacle.blocks.erase(it); // Remove the block from the vector
+                    std::cout << "Obstacle damage by alien!" << std::endl;
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+        }
     }
 }
