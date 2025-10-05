@@ -21,7 +21,6 @@ void Laser::Update()
         if( (position.y > GetScreenHeight()) || (position.y < 0) )
         {
             active = false;
-            std::cout << "Laser deactivated" << std::endl;
         }
     }
 }
@@ -32,4 +31,15 @@ void Laser::Draw()
     {
         DrawRectangle(position.x, position.y, LASER_BEAM_WIDTH, LASER_BEAM_HEIGTH, LASER_BEAM_COLOR);
     }
+}
+
+Rectangle Laser::GetRect()
+{
+    Rectangle rect;
+    rect.x = position.x;
+    rect.y = position.y;
+    rect.width = LASER_BEAM_WIDTH;
+    rect.height = LASER_BEAM_HEIGTH;
+
+    return rect;
 }

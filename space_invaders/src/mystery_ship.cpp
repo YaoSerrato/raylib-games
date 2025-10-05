@@ -53,3 +53,23 @@ void MysteryShip::Spawn()
 
     alive = true;
 }
+
+Rectangle MysteryShip::GetRect()
+{
+    Rectangle rect;
+    rect.x = position.x;
+    rect.y = position.y;
+
+    if(alive)
+    {
+        rect.width = image.width;
+        rect.height = image.height;
+    }
+    else
+    {
+        rect.width = 0;
+        rect.height = 0;
+    }
+
+    return rect;
+}

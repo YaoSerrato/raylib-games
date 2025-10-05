@@ -42,6 +42,17 @@ alienType Alien::GetType()
     return type;
 }
 
+Rectangle Alien::GetRect()
+{
+    Rectangle rect;
+    rect.x = position.x;
+    rect.y = position.y;
+    rect.width = float(alienImages[type].width);
+    rect.height = float(alienImages[type].height);
+
+    return rect;
+}
+
 void Alien::UnloadImages()
 {
     for(unsigned int i = 0; i < ALIEN_TYPE_MAX; ++i)

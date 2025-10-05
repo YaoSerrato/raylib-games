@@ -30,6 +30,7 @@ class Alien
         void Update(int direction);
         void Draw();
         alienType GetType();
+        Rectangle GetRect();
 
         static void UnloadImages();
 
