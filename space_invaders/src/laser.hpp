@@ -6,6 +6,7 @@
 #define LASER_BEAM_HEIGTH            (15)
 #define LASER_BEAM_COLOR             ((Color){243, 216, 63, 255})
 #define LASER_BEAM_SPACESHIP_SPEED   (-6)
+#define LASER_BEAM_ALIEN_SPEED       (5)
 
 class Laser
 {

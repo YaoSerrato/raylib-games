@@ -8,6 +8,7 @@ Game::Game()
     CreateAliens(2, 5);
 
     aliensDirection = ALIEN_ARMY_HORIZONTAL_DIRECTION;
+    lastFireTimeAlien = 0.0;
 }
 
 Game::~Game()
@@ -37,6 +38,12 @@ void Game::Draw()
     {
         single_alien.Draw();
     }
+
+    //Draw all alien lasers
+    for(auto& single_laser: aliensLasers)
+    {
+        single_laser.Draw();
+    }
 }
 
 void Game::Update()
@@ -52,6 +59,13 @@ void Game::Update()
 
     // Update position of all aliens
     MoveAliens();
+
+    // Manage alien lasers
+    AlienShootLaser();
+    for(auto& single_laser: aliensLasers)
+    {
+        single_laser.Update();
+    }
 }
 
 void Game::HandleInput()
@@ -79,6 +93,18 @@ void Game::DeleteInactiveLasers()
         if(!(it->active))
         {
             it = spaceship.lasers.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    for(auto it = aliensLasers.begin(); it != aliensLasers.end(); )
+    {
+        if(!(it->active))
+        {
+            it = aliensLasers.erase(it);
         }
         else
         {
@@ -175,5 +201,19 @@ void Game::MoveAliensVertical(unsigned int distance)
     for(auto& single_alien: aliens)
     {
         single_alien.position.y += distance;
+    }
+}
+
+void Game::AlienShootLaser()
+{
+    if( ((GetTime() - lastFireTimeAlien) >= ALIEN_ARMY_FIRE_RATE) && (!aliens.empty()) )
+    {
+        unsigned int random_alien_index = GetRandomValue(0, aliens.size() - 1);
+        Alien& shooting_alien = aliens[random_alien_index];
+
+        aliensLasers.push_back(Laser( (Vector2){shooting_alien.position.x + shooting_alien.alienImages[shooting_alien.type].width/2,
+                                                shooting_alien.position.y + shooting_alien.alienImages[shooting_alien.type].height},
+                                                LASER_BEAM_ALIEN_SPEED));
+        lastFireTimeAlien = GetTime();
     }
 }
