@@ -1,6 +1,18 @@
 #include "game.hpp"
 #include <iostream>
 
+#define GAME_LIVE_PROGRESSBAR_WIDTH       (300)
+#define GAME_LIVE_PROGRESSBAR_HEIGHT      (20)
+#define GAME_LIVE_PROGRESSBAR_OFFSET      (20)
+#define GAME_LIVE_PROGRESSBAR_SENSITIVITY (9)
+
+#define GAME_FOREGROUND_COLOR             ( (Color){243, 216, 63, 255} ) // Yellow
+#define GAME_BACKGROUND_COLOR             ( (Color){70, 70, 70, 255} ) // Dark gray
+#define GAME_TEXT_FONT_SIZE               (25)
+
+#define GAME_SCORE_ALIEN_HIT              (10)
+#define GAME_SCORE_MYSTERYSHIP_HIT        (50)
+
 Game::Game()
 {
     // Create desired number of obstacles
@@ -14,6 +26,10 @@ Game::Game()
     // Initialize mystery ship spawn timer
     lastMysteryShipSpawnTime = 0.0;
     mysteryShipSpawnInterval = GetRandomValue(MYSTERY_SHIP_MIN_SPAWN_INTERVAL, MYSTERY_SHIP_MAX_SPAWN_INTERVAL);
+
+    // Initialize live counter and score
+    liveCounter = GAME_LIVE_PROGRESSBAR_WIDTH;
+    score = 0;
 }
 
 Game::~Game()
@@ -52,6 +68,9 @@ void Game::Draw()
 
     // Draw mystery ship
     mysteryShip.Draw();
+
+    // Draw score
+    DrawScore();
 }
 
 void Game::Update()
@@ -148,7 +167,7 @@ void Game::CreateObstacles(unsigned int numberOfObstacles)
     for(unsigned int i = 0; i < numberOfObstacles; ++i)
     {
         float offset_x = (obstacleGap * (i + 1)) + (obstacleWidth * (i));
-        obstacles.push_back( Obstacle((Vector2){offset_x, (float)(GetScreenHeight() - 100)}) );
+        obstacles.push_back( Obstacle((Vector2){offset_x, (float)(COMMON_PLAY_AREA_OBSTACLES)}) );
     }
 }
 
@@ -256,6 +275,7 @@ void Game::CheckCollisions()
                 it = aliens.erase(it); // Remove the alien from the vector
                 spaceship_laser.active = false;
                 std::cout << "Alien hit!" << std::endl;
+                score += GAME_SCORE_ALIEN_HIT;
             }
             else
             {
@@ -290,6 +310,7 @@ void Game::CheckCollisions()
             mysteryShip.alive = false;
             spaceship_laser.active = false;
             std::cout << "Mystery ship hit!" << std::endl;
+            score += GAME_SCORE_MYSTERYSHIP_HIT;
         }
     }
 
@@ -302,6 +323,15 @@ void Game::CheckCollisions()
             // There is a collision between an alien laser and the spaceship
             alien_laser.active = false;
             std::cout << "Spaceship hit!" << std::endl;
+            if(liveCounter > 0)
+            {
+                liveCounter -= GAME_LIVE_PROGRESSBAR_SENSITIVITY;
+                if(liveCounter < 0)
+                {
+                    liveCounter = 0;
+                    GameOver();
+                }
+            }
         }
 
         // Collisions between alien lasers and obstacles
@@ -333,6 +363,7 @@ void Game::CheckCollisions()
         {
             // There is a collision between an alien and the spaceship
             std::cout << "Spaceship hit by alien!" << std::endl;
+            GameOver();
         }
 
         // Collisions between aliens and obstacles
@@ -354,4 +385,42 @@ void Game::CheckCollisions()
             }
         }
     }
+}
+
+void Game::DrawScore()
+{
+    // Draw play area boundary lines
+    DrawLine(5, COMMON_PLAY_AREA_TOP, GetScreenWidth() - 5, COMMON_PLAY_AREA_TOP, GAME_FOREGROUND_COLOR);
+    DrawLine(5, COMMON_PLAY_AREA_BOTTOM, GetScreenWidth() - 5, COMMON_PLAY_AREA_BOTTOM, GAME_FOREGROUND_COLOR);
+
+    // Draw live progress bar
+    DrawRectangle(GAME_LIVE_PROGRESSBAR_OFFSET,
+                  COMMON_WINDOW_HEIGHT - GAME_LIVE_PROGRESSBAR_OFFSET - GAME_LIVE_PROGRESSBAR_HEIGHT,
+                  GAME_LIVE_PROGRESSBAR_WIDTH,
+                  GAME_LIVE_PROGRESSBAR_HEIGHT,
+                  GAME_BACKGROUND_COLOR);
+    
+    DrawRectangle(GAME_LIVE_PROGRESSBAR_OFFSET,
+                  COMMON_WINDOW_HEIGHT - GAME_LIVE_PROGRESSBAR_OFFSET - GAME_LIVE_PROGRESSBAR_HEIGHT,
+                  liveCounter,
+                  GAME_LIVE_PROGRESSBAR_HEIGHT,
+                  GAME_FOREGROUND_COLOR);
+
+    float percent = ((float)liveCounter / (float)GAME_LIVE_PROGRESSBAR_WIDTH) * 100.0f;
+    DrawText( TextFormat("%.0f%%", percent),
+              2*GAME_LIVE_PROGRESSBAR_OFFSET + GAME_LIVE_PROGRESSBAR_WIDTH,
+              COMMON_WINDOW_HEIGHT - GAME_LIVE_PROGRESSBAR_OFFSET - GAME_LIVE_PROGRESSBAR_HEIGHT,
+              GAME_TEXT_FONT_SIZE,
+              GAME_FOREGROUND_COLOR);
+    
+    // Draw current score
+    DrawText( TextFormat("SCORE: %d", score),
+              GAME_LIVE_PROGRESSBAR_OFFSET,
+              COMMON_PLAY_AREA_TOP - 2*GAME_LIVE_PROGRESSBAR_OFFSET,
+              GAME_TEXT_FONT_SIZE,
+              GAME_FOREGROUND_COLOR);
+}
+
+void Game::GameOver()
+{
 }

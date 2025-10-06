@@ -1,6 +1,7 @@
 #pragma once
 
 #include <raylib.h>
+#include "common.hpp"
 
 #define MYSTERY_SHIP_MIN_SPAWN_INTERVAL    10
 #define MYSTERY_SHIP_MAX_SPAWN_INTERVAL    20

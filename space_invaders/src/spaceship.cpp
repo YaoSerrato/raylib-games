@@ -7,7 +7,7 @@ Spaceship::Spaceship()
 {
     image = LoadTexture("../assets/spaceship.png");
     position.x = (GetScreenWidth() - image.width) / 2;
-    position.y = GetScreenHeight() - image.height;
+    position.y = COMMON_PLAY_AREA_BOTTOM - image.height;
     lastFireTime = 0.0;
 }
 

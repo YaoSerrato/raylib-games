@@ -10,11 +10,11 @@ int main()
                                 .b = 27,
                                 .a = 255
                             };
-    int windowWidth = 750;
-    int windowHeight = 750;
+    int windowWidth = COMMON_WINDOW_WIDTH;
+    int windowHeight = COMMON_WINDOW_HEIGHT;
 
     InitWindow(windowWidth, windowHeight, "Space Invaders");
-    SetTargetFPS(60);
+    SetTargetFPS(COMMON_FPS);
 
     Game game;
 

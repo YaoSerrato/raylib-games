@@ -1,7 +1,7 @@
 #include "mystery_ship.hpp"
 
-#define MYSTERY_SHIP_POSITION_Y    40
-#define MYSTERY_SHIP_SPEED         3
+#define MYSTERY_SHIP_POSITION_Y    (COMMON_PLAY_AREA_TOP + 12)
+#define MYSTERY_SHIP_SPEED         (3)
 
 MysteryShip::MysteryShip()
 {
@@ -24,6 +24,10 @@ void MysteryShip::Update()
         {
             alive = false;
         }
+    }
+    else
+    {
+        position.x = GetScreenWidth(); // Position the mystery ship off-screen when not alive
     }
 }
 

@@ -18,7 +18,7 @@ void Laser::Update()
     position.y += speed;
     if(active)
     {
-        if( (position.y > GetScreenHeight()) || (position.y < 0) )
+        if( (position.y >= (COMMON_PLAY_AREA_BOTTOM - LASER_BEAM_HEIGTH)) || (position.y <= COMMON_PLAY_AREA_TOP) )
         {
             active = false;
         }
