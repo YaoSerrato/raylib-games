@@ -13,23 +13,13 @@
 #define GAME_SCORE_ALIEN_HIT              (10)
 #define GAME_SCORE_MYSTERYSHIP_HIT        (50)
 
+#define GAME_GAMEOVER_MESSAGE_WIDTH      (400)
+#define GAME_GAMEOVER_MESSAGE_HEIGHT     (200)
+#define GAME_GAMEOVER_MESSAGE_TOGGLETIME ((double)0.8)
+
 Game::Game()
 {
-    // Create desired number of obstacles
-    CreateObstacles(4);
-
-    // Create aliens
-    CreateAliens(11, 5);
-    aliensDirection = ALIEN_ARMY_HORIZONTAL_DIRECTION;
-    lastFireTimeAlien = 0.0;
-
-    // Initialize mystery ship spawn timer
-    lastMysteryShipSpawnTime = 0.0;
-    mysteryShipSpawnInterval = GetRandomValue(MYSTERY_SHIP_MIN_SPAWN_INTERVAL, MYSTERY_SHIP_MAX_SPAWN_INTERVAL);
-
-    // Initialize live counter and score
-    liveCounter = GAME_LIVE_PROGRESSBAR_WIDTH;
-    score = 0;
+    InitGame();
 }
 
 Game::~Game()
@@ -71,10 +61,27 @@ void Game::Draw()
 
     // Draw score
     DrawScore();
+
+    // Draw game over message
+    if(!run)
+    {
+        DrawGameOverMessage();
+    }
 }
 
 void Game::Update()
 {
+    // If the game is over, do not update anything
+    if(!run)
+    {
+        if(IsKeyDown(KEY_ENTER))
+        {
+            Reset();
+            InitGame();
+        }
+        return;
+    }
+
     // Update position of all active lasers
     for(auto& single_laser: spaceship.lasers)
     {
@@ -112,6 +119,12 @@ void Game::Update()
 
 void Game::HandleInput()
 {
+    // If the game is over, do not handle any input
+    if(!run)
+    {
+        return;
+    }
+
     if(IsKeyDown(KEY_LEFT))
     {
         spaceship.MoveLeft();
@@ -423,4 +436,124 @@ void Game::DrawScore()
 
 void Game::GameOver()
 {
+    run = false;
+}
+
+void Game::Reset()
+{
+    spaceship.Reset();
+    aliens.clear();
+    aliensLasers.clear();
+    obstacles.clear();
+}
+
+void Game::InitGame()
+{
+    // Create desired number of obstacles
+    CreateObstacles(4);
+
+    // Create aliens
+    CreateAliens(11, 5);
+    aliensDirection = ALIEN_ARMY_HORIZONTAL_DIRECTION;
+    lastFireTimeAlien = 0.0;
+
+    // Initialize mystery ship spawn timer
+    lastMysteryShipSpawnTime = 0.0;
+    mysteryShipSpawnInterval = GetRandomValue(MYSTERY_SHIP_MIN_SPAWN_INTERVAL, MYSTERY_SHIP_MAX_SPAWN_INTERVAL);
+
+    // Initialize live counter and score
+    liveCounter = GAME_LIVE_PROGRESSBAR_WIDTH;
+    score = 0;
+
+    // Game runs by default
+    run = true;
+
+    // Game over message parameters
+    lastGameOverMessageTime = 0.0;
+    intervalGameOverMessage = GAME_GAMEOVER_MESSAGE_TOGGLETIME;
+    toogleGameOverMessage = false;
+}
+
+void Game::DrawGameOverMessage()
+{
+    // Drawing outter rectangle
+    int outter_rect[4] = 
+    {
+        (GetScreenWidth() - GAME_GAMEOVER_MESSAGE_WIDTH)/2,
+        COMMON_PLAY_AREA_TOP + COMMON_PLAY_AREA_BOTTOM/2 - GAME_GAMEOVER_MESSAGE_HEIGHT/2,
+        GAME_GAMEOVER_MESSAGE_WIDTH,
+        GAME_GAMEOVER_MESSAGE_HEIGHT
+    };
+
+    DrawRectangle(outter_rect[0], outter_rect[1], outter_rect[2], outter_rect[3], GAME_BACKGROUND_COLOR);
+
+    // Drawing inner rectangle
+    int offset = 5;
+    int inner_rectangle[4] =
+    {
+        outter_rect[0] + offset,
+        outter_rect[1] + offset,
+        outter_rect[2] - 2*offset,
+        outter_rect[3] - 2*offset,
+    };
+    Rectangle rect = {float(inner_rectangle[0]), float(inner_rectangle[1]), float(inner_rectangle[2]), float(inner_rectangle[3])};
+
+    DrawRectangleLinesEx(rect,
+                        5.0,
+                        GAME_FOREGROUND_COLOR);
+
+    // Drawing text
+    struct TextData
+    {
+        const char * text;
+        int x;
+        int y;
+        int font_size;
+        Color color;
+    } game_over_text[2] = 
+    {
+        {
+            .text = "GAME OVER",
+            .x = inner_rectangle[0] + 29,
+            .y = inner_rectangle[1] + 35,
+            .font_size = 55,
+            .color = GAME_FOREGROUND_COLOR
+        },
+        {
+            .text = "Press [ENTER] to restart",
+            .x = inner_rectangle[0] + 15,
+            .y = inner_rectangle[1] + 125,
+            .font_size = 28,
+            .color = GAME_FOREGROUND_COLOR
+        }
+    };
+
+    if((GetTime() - lastGameOverMessageTime) >= intervalGameOverMessage)
+    {
+        if(toogleGameOverMessage)
+        {
+            toogleGameOverMessage = false;
+        }
+        else
+        {
+            toogleGameOverMessage = true;
+        }
+
+        lastGameOverMessageTime = GetTime();
+    }
+
+    if(toogleGameOverMessage)
+    {
+        DrawText(game_over_text[0].text,
+                game_over_text[0].x,
+                game_over_text[0].y,
+                game_over_text[0].font_size,
+                game_over_text[0].color);
+
+        DrawText(game_over_text[1].text,
+                game_over_text[1].x,
+                game_over_text[1].y,
+                game_over_text[1].font_size,
+                game_over_text[1].color);
+    }
 }
