@@ -58,3 +58,11 @@ Rectangle Spaceship::GetRect()
 
     return rect;
 }
+
+void Spaceship::Reset()
+{
+    position.x = (GetScreenWidth() - image.width) / 2;
+    position.y = COMMON_PLAY_AREA_BOTTOM - image.height;
+
+    lasers.clear();
+}

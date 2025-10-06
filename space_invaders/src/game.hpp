@@ -15,6 +15,8 @@ class Game
         void Update();
         void HandleInput();
 
+        bool run;
+
     private:
         void DeleteInactiveLasers();
         void CreateObstacles(unsigned int numberOfObstacles);
@@ -25,6 +27,9 @@ class Game
         void CheckCollisions();
         void DrawScore();
         void GameOver();
+        void Reset();
+        void InitGame();
+        void DrawGameOverMessage();
 
         Spaceship spaceship;
         std::vector<Obstacle> obstacles;
@@ -37,4 +42,7 @@ class Game
         double mysteryShipSpawnInterval;
         int liveCounter;
         unsigned int score;
+        double lastGameOverMessageTime;
+        double intervalGameOverMessage;
+        bool toogleGameOverMessage;
 };
