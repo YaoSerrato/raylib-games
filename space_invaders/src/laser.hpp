@@ -1,6 +1,7 @@
 #pragma once
 
 #include "raylib.h"
+#include "common.hpp"
 
 #define LASER_BEAM_WIDTH             (4)
 #define LASER_BEAM_HEIGTH            (15)

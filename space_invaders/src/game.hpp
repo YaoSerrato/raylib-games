@@ -1,5 +1,6 @@
 #pragma once // This header file will be included only once in a compilation unit
 
+#include "common.hpp"
 #include "spaceship.hpp"
 #include "obstacle.hpp"
 #include "alien.hpp"
@@ -22,6 +23,8 @@ class Game
         void MoveAliensVertical(unsigned int distance);
         void AlienShootLaser();
         void CheckCollisions();
+        void DrawScore();
+        void GameOver();
 
         Spaceship spaceship;
         std::vector<Obstacle> obstacles;
@@ -32,4 +35,6 @@ class Game
         MysteryShip mysteryShip;
         double lastMysteryShipSpawnTime;
         double mysteryShipSpawnInterval;
+        int liveCounter;
+        unsigned int score;
 };
