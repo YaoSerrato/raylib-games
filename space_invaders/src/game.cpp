@@ -63,7 +63,7 @@ void Game::Draw()
     DrawScore();
 
     // Draw game over message
-    if(!run)
+    if(!currentStatus.run)
     {
         DrawGameOverMessage();
     }
@@ -71,8 +71,11 @@ void Game::Draw()
 
 void Game::Update()
 {
+    // Check if the user has won already
+    CheckGameWon();
+
     // If the game is over, do not update anything
-    if(!run)
+    if(!currentStatus.run)
     {
         if(IsKeyDown(KEY_ENTER))
         {
@@ -120,7 +123,7 @@ void Game::Update()
 void Game::HandleInput()
 {
     // If the game is over, do not handle any input
-    if(!run)
+    if(!currentStatus.run)
     {
         return;
     }
@@ -342,7 +345,7 @@ void Game::CheckCollisions()
                 if(liveCounter < 0)
                 {
                     liveCounter = 0;
-                    GameOver();
+                    GameOver(GAME_LOST);
                 }
             }
         }
@@ -376,7 +379,7 @@ void Game::CheckCollisions()
         {
             // There is a collision between an alien and the spaceship
             std::cout << "Spaceship hit by alien!" << std::endl;
-            GameOver();
+            GameOver(GAME_LOST);
         }
 
         // Collisions between aliens and obstacles
@@ -434,9 +437,10 @@ void Game::DrawScore()
               GAME_FOREGROUND_COLOR);
 }
 
-void Game::GameOver()
+void Game::GameOver(gameOverType type)
 {
-    run = false;
+    currentStatus.run = false;
+    currentStatus.status = type;
 }
 
 void Game::Reset()
@@ -466,7 +470,8 @@ void Game::InitGame()
     score = 0;
 
     // Game runs by default
-    run = true;
+    currentStatus.run = true;
+    currentStatus.status = GAME_IDLE;
 
     // Game over message parameters
     lastGameOverMessageTime = 0.0;
@@ -503,6 +508,20 @@ void Game::DrawGameOverMessage()
                         GAME_FOREGROUND_COLOR);
 
     // Drawing text
+    const char * msg;
+    switch(currentStatus.status)
+    {
+        case GAME_WON:
+            msg = "YOU WON!!";
+            break;
+        case GAME_LOST:
+            msg = "GAME OVER";
+            break;
+        default:
+            msg = "";
+            break;
+    }
+
     struct TextData
     {
         const char * text;
@@ -513,7 +532,7 @@ void Game::DrawGameOverMessage()
     } game_over_text[2] = 
     {
         {
-            .text = "GAME OVER",
+            .text = msg,
             .x = inner_rectangle[0] + 29,
             .y = inner_rectangle[1] + 35,
             .font_size = 55,
@@ -555,5 +574,17 @@ void Game::DrawGameOverMessage()
                 game_over_text[1].y,
                 game_over_text[1].font_size,
                 game_over_text[1].color);
+    }
+}
+
+void Game::CheckGameWon()
+{
+    if(aliens.size() > 0)
+    {
+        // The player has not won yet since there are aliens still alive
+    }
+    else
+    {
+        GameOver(GAME_WON);
     }
 }

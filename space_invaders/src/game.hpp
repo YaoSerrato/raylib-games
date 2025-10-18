@@ -6,6 +6,20 @@
 #include "alien.hpp"
 #include "mystery_ship.hpp"
 
+typedef enum
+{
+    GAME_IDLE,
+    GAME_LOST,
+    GAME_WON
+} gameOverType;
+
+typedef struct
+{
+    bool run;
+    gameOverType status;
+} gameStatus;
+
+
 class Game
 {
     public:
@@ -15,7 +29,7 @@ class Game
         void Update();
         void HandleInput();
 
-        bool run;
+        gameStatus currentStatus;
 
     private:
         void DeleteInactiveLasers();
@@ -26,10 +40,11 @@ class Game
         void AlienShootLaser();
         void CheckCollisions();
         void DrawScore();
-        void GameOver();
+        void GameOver(gameOverType type);
         void Reset();
         void InitGame();
         void DrawGameOverMessage();
+        void CheckGameWon();
 
         Spaceship spaceship;
         std::vector<Obstacle> obstacles;
